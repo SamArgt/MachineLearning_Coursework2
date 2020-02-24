@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import train_test_split
 
-from BayesianLinRegressionModel import *
+from Model_GPRegression import *
 from GridSearchCV_func import *
 
 df = pd.read_csv("dataQ3.csv")
@@ -30,13 +31,22 @@ X_test_1 = X_test.drop(['month', 'month_name'], axis=1)
 X_train_1 = X_train_1.values
 X_test_1 = X_test_1.values
 
+y_train_1 = (y_train - np.mean(y_train)) / np.std(y_train)
+y_test_1 = (y_test - np.mean(y_train)) / np.std(y_train)
 
-params_grid = {'alpha': [0.1, 0.5, 1, 2, 5, 10, 50],
-               'sigma': [0.1, 0.5, 1, 2, 5, 10, 50]}
 
-best_score, best_params = GridSearch_CV(
-    X_train_1, y_train, bayesian_linear_model, params_grid)
+params_grid = {'kernel': ['gaussian', 'matern', "periodic"],
+               "amplitude": [0.1, 1, 5, 10, 40],
+               "length": [0.1, 1, 10, 20],
+               "periodicity": [0.1, 1, 50, 100]}
 
-with open('bayes_lin_regr_nnet_results.txt', 'w') as f:
+
+best_score, best_params, Scores_CV, mesh_grid_df = GridSearch_CV(
+    X_train_1, y_train_1, GPRegression, params_grid)
+
+mesh_grid_df['results'] = Scores_CV
+mesh_grid_df.to_csv('gp_regression_results.csv')
+
+with open('GPRegr_results.txt', 'w') as f:
     f.write(str(best_score))
     f.write(str(best_params))

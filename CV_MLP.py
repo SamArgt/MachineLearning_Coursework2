@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 
-from NnetModel import *
+from Model_MLP import *
 from GridSearchCV_func import *
 
 df = pd.read_csv("dataQ2.csv")
